@@ -5,36 +5,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'; // Clerk components
-import getStripe from '../utils/get-stripe'; // Ensure this path is correct
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import ClientCheckoutButton from './ClientCheckoutButton'; // Import the client-only component
 
 export default function Home() {
-  const handleSubmit = async () => {
-    try {
-      // Fetch checkout session from server
-      const checkoutSession = await fetch('/api/checkout_sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // Optional: specify content type
-      });
-      if (!checkoutSession.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const checkoutSessionJson = await checkoutSession.json();
-
-      // Initialize Stripe and redirect to checkout
-      const stripe = await getStripe();
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: checkoutSessionJson.id,
-      });
-
-      if (error) {
-        console.warn(error.message);
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-    }
-  };
-
   return (
     <>
       {/* Header and Navigation */}
@@ -91,10 +65,10 @@ export default function Home() {
 
       {/* Checkout Button */}
       <Box sx={{ textAlign: 'center', my: 6 }}>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
-          Start Checkout
-        </Button>
+        <ClientCheckoutButton /> {/* Use the client-only button here */}
       </Box>
     </>
   );
 }
+
+
